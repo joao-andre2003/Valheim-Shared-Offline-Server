@@ -8,8 +8,7 @@
   },
   "Server": {
     "githubToken": "",
-    "githubRepository": "",
+    "githubRepository": "<YourProfileName>/<YourRepositoryName>",
     "maxWorldSaves": 5
   }
-
 }
