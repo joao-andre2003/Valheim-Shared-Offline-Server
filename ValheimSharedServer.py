@@ -141,8 +141,8 @@ def LoadWorld(repo_obj, worldName):
     contents = GetContents(repo_obj, worldName);
     selectedContent = SelectContent(contents);
  
-    contents_to_import = [worldName + f"/{worldName}.db", worldName + f"/{worldName}.fwl"];
-    contents_to_import.append(selectedContent, selectedContent[ : selectedContent.find(".")] + ".fwl")
+    contents_to_import = [worldName + f"/{worldName}.db", worldName + f"/{worldName}.fwl", selectedContent];
+    contents_to_import.append(selectedContent[ : selectedContent.find(".")] + ".fwl");
  
     imported_contents = [];
     for content in contents_to_import:
