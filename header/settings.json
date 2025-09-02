@@ -1,0 +1,15 @@
+{
+  "Client": {
+    "username": "",
+    "steamID": "",
+    "saveMode": "cloud",
+    "localSavePath": "C:/Users/<Your_PC_Username>/AppData/LocalLow/IronGate/Valheim/worlds/",
+    "cloudSavePath": "C:/Program Files (x86)/Steam/userdata/%s/892970/remote/worlds/"
+  },
+  "Server": {
+    "githubToken": "",
+    "githubRepository": "",
+    "maxWorldSaves": 5
+  }
+
+}
