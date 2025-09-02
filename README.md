@@ -1,12 +1,12 @@
 # Valheim-Shared-Offline-Server
-<div display="flex" justify-content="center"><img src="https://img2.storyblok.com/fit-in/1920x1080/f/157036/6000x3337/61023ec07d/skepp.jpg" alt="Valheim official media from https://www.valheimgame.com/pt/#media" width="1000" height="556"/></div>
+<p align="center"><img src="https://img2.storyblok.com/fit-in/1920x1080/f/157036/6000x3337/61023ec07d/skepp.jpg" alt="Valheim official media from https://www.valheimgame.com/pt/#media" width="1000" height="556"/></p>
 
 # 
 A program made for the game Valheim that makes possible multiple players share the same world at any time, without the need of a dedicated server  UNFINISHED YET
 Autor: João André A.
 # Why use?
 If you have a group of friends that you play Valheim with, you must know how annoying it is to be able to play in the world only when the world's owner is online to host. With this program, any player can have the current world save of the owner and host it for other players to join, at any time, independent of the original owner's availability. All the player's progress will be saved and can be loaded by any of the players after. It is basically how an open server works, but cost-free, with quick save and load operations for the shared world save and any player from the server can host.
-<div display="flex" justify-content="center"><img src="https://img2.storyblok.com/fit-in/1000x1000/f/157036/802x1054/9da9082a5f/reeds.png" alt="Valheim official media from https://www.valheimgame.com" width="200" height="263"/></div>
+<p align="center"><img src="https://img2.storyblok.com/fit-in/1000x1000/f/157036/802x1054/9da9082a5f/reeds.png" alt="Valheim official media from https://www.valheimgame.com" width="200" height="263"/></p>
 
 # How it Works?
 It is a Python .exe, the source-code is available for personal edit if you wish to and to guarantee it is not a malicious program. Sorry if the code is a bit messy, I made it in 3 days. You can transform the .py in .exe on your local machine, with "pyinstaller --onefile ValheimSharedOfflineServer.py" or run it on the compiler. The code works by creating a connection with Github, where the local saves will be exported. On the program, you have the option to SAVE, LOAD, or CREATE NEW WORLD that will create a folder to hold a specific world's saves and backups on Github. Be aware that Github do not support files sizes greater than 100mb, so does this program's version, but rarely a world save will supass this size. The code will not run without the settings.json file also, you must set this file with your information before running the program. While only one person needs to set up the Github repository, every player should install this program to work as intended.
@@ -36,6 +36,6 @@ Run the program before opening the game and run the **command LOAD to "open the 
 
 Run the program after closing the game and run the **command SAVE to "close the server"**. This will get the last save from your machine and export it to the Github repository. After that, anyone can start the program with the option LOAD to load your save and progress.
 
-<div display="flex" justify-content="center"><img src="https://img2.storyblok.com/fit-in/1000x1000/f/157036/552x800/322109d551/build-2.png" alt="Valheim official media from https://www.valheimgame.com" width="276" height="400"/></div>
+<p align="center"><img src="https://img2.storyblok.com/fit-in/1000x1000/f/157036/552x800/322109d551/build-2.png" alt="Valheim official media from https://www.valheimgame.com" width="276" height="400"/></p>
 
 ## May the wind blow in your crew's favor!
