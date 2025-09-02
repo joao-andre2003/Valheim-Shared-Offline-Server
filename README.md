@@ -32,7 +32,7 @@ Open the header folder and edit the settings.json the fields (always insert valu
 ## How to Use Valheim-Shared-Offline-Server:
 If this is the first time running the program, or you want to add another world server, run the **command CREATE NEW WORLD to add a new world to the Github repository**. You must create or already have a world Valheim in-game with the same name.
 
-Run the program before opening the game and run the **command LOAD to "open the server"**. This will get the last save from the Github repository and import it to your machine. If somebody used the server while you were offline, now you will have their progress. Just need to open the game, select the world and check Start Server to host to the other playes. The program will inform, but be sure to load only if no one loaded and is currently hosting.
+Run the program before opening the game and run the **command LOAD to "open the server"**. This will get the last save from the Github repository and import it to your machine. If somebody used the server while you were offline, now you will have their progress. Just need to open the game, select the world and check Start Server to host to the other players. The program will inform, but be sure to load only if no one loaded and is currently hosting.
 
 Run the program after closing the game and run the **command SAVE to "close the server"**. This will get the last save from your machine and export it to the Github repository. After that, anyone can start the program with the option LOAD to load your save and progress.
 
