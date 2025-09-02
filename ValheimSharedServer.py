@@ -34,6 +34,9 @@ def Log(logType, message):
     if logType == Debug.ERROR:
         input("Press any key to exit...");
         sys.exit(0);
+
+def GetDateFromFile(fileName):
+    return fileName[fileName.find("-") + 1 : fileName.rfind(".")].replace("-", ""); # auto backups have another '-' to separate hour from day
  
 def GetContents(repo_obj, path=""):
     try:
@@ -43,15 +46,15 @@ def GetContents(repo_obj, path=""):
             Log(Debug.ERROR, f"There are no world saves available on the github server. Please, select the option {Debug.UNDERLINE}Create New World{Debug.END} at the start of the program for correctly set up.");
        
         if contents[0].type != "dir":
-            contents_path = [];
+            contents_path_time = [];
             for c in contents:
-                contents_path.append(c.path);
-            contents_path_ordered = sorted(contents_path, reverse=True);
+                contents_path_time.append(GetDateFromFile(c.path));
+            contents_path_ordered = sorted(contents_path_time, reverse=True);
  
             _contents = contents;
             contents = [];
-            for i in range(len(contents_path)):
-                new_i = contents_path_ordered.index(contents_path[i]);
+            for i in range(len(contents_path_time)):
+                new_i = contents_path_ordered.index(contents_path_time[i]);
                 if ".db" in _contents[new_i].path and "backup" in _contents[new_i].path:
                     contents.append(_contents[new_i]); # Order contents to date
        
@@ -138,16 +141,17 @@ def LoadWorld(repo_obj, worldName):
     contents = GetContents(repo_obj, worldName);
     selectedContent = SelectContent(contents);
  
-    contents_to_import = [selectedContent];
-    contents_to_import.append(worldName+f"/{worldName}.fwl");
+    contents_to_import = [worldName + f"/{worldName}.db", worldName + f"/{worldName}.fwl"];
+    contents_to_import.append(selectedContent, selectedContent[ : selectedContent.find(".")] + ".fwl")
  
-    imported_contents = [f"{worldName}.db"];
-    imported_contents.append(f"{worldName}.fwl");
-   
+    imported_contents = [];
+    for content in contents_to_import:
+        imported_contents.append(content[content.find("/") + 1 : ]);
+    
     print(f"[SELECTED {selectedContent[selectedContent.find("/") + 1 : ]}] Loading world to {"local world saves" if IsLocalSaved else "Steam's cloud world saves"}...");
     for i in range(len(contents_to_import)):
- 
         worldSave = repo_obj.get_contents(contents_to_import[i]);
+
         if worldSave.encoding == "none":
             download_url = worldSave.download_url;
             worldSave = requests.get(download_url).content;
@@ -181,7 +185,7 @@ def SaveWorld(repo_obj, worldName):
     try:
         current_time = datetime.datetime.now();
         current_time_dmy = datetime.datetime.strftime(current_time, '%d-%m-%Y %H:%M:%S');
-        commit_base_message = f"[{current_time_dmy} Saved by: {SETTINGS['Client']['username']}] - ";
+        commit_base_message = f"[{current_time_dmy} Saved by: {SETTINGS['Client']['username']}] ";
        
         files_to_update = [worldName + ".db"];
         files_to_update.append(worldName + ".fwl");
@@ -199,8 +203,7 @@ def SaveWorld(repo_obj, worldName):
         backup_files_time = [];
         for f in allLocalSaves:
             if worldName in f and "backup" in f and ".db" in f:
-                f_ymd_time = f[f.find("-") + 1 : f.rfind(".")].replace("-", ""); # auto backups have another '-' to separate hour from day
-                backup_files_time.append(f_ymd_time);
+                backup_files_time.append(GetDateFromFile(f.path));
         backup_files_time = sorted(backup_files_time, reverse=True);
 
         last_backup_DT = datetime.datetime.strptime(backup_files_time[0], '%Y%m%d%H%M%S');
