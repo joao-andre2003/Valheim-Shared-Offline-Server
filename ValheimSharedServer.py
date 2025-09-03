@@ -36,7 +36,7 @@ def Log(logType, message):
         sys.exit(0);
 
 def GetDateFromFile(fileName):
-    return fileName[fileName.find("-") + 1 : fileName.rfind(".")].replace("-", ""); # auto backups have another '-' to separate hour from day
+    return fileName.replace("auto-", "")[fileName.find("backup_") + 7 : ].replace("-", "").replace(".db", ""); # backups have another '-' to separate hour from day
  
 def GetContents(repo_obj, path=""):
     try:
@@ -45,7 +45,7 @@ def GetContents(repo_obj, path=""):
         if len(contents) <= 0:
             Log(Debug.ERROR, f"There are no world saves available on the github server. Please, select the option {Debug.UNDERLINE}Create New World{Debug.END} at the start of the program for correctly set up.");
        
-        if contents[0].type != "dir":
+        if path != "":
             contents_path_time = [];
             for c in contents:
                 contents_path_time.append(GetDateFromFile(c.path));
@@ -62,7 +62,7 @@ def GetContents(repo_obj, path=""):
         cnt = 1;
         for content_file in contents:
             print(f"       {cnt}. {content_file.path[content_file.path.find("/") + 1 : ]}", end=" ");
-            if content_file.type != "dir":
+            if path != "":
                 print(repo_obj.get_commits(path=content_file.path)[0].commit.message, end=" ");
             print("\n", end="");
             cnt += 1;
@@ -119,7 +119,7 @@ def CreateNewWorld(repo_obj):
             message= "New file",
             content= ""
         );
-    Log(Debug.SUCCESS, "New world files created. Ready for load or save.");
+    Log(Debug.SUCCESS, "New world files created. Ready for load or save.\n\n");
  
 def LoadWorld(repo_obj, worldName):
     global Local_Path, IsLocalSaved, IsServerActive;
@@ -133,14 +133,19 @@ def LoadWorld(repo_obj, worldName):
                            );
         if opt == "n":
             sys.exit(0);
-   
-    contents = [];
-    selectedContent = "";
- 
+
     print(f"\n{Debug.UNDERLINE}[SELECTED {worldName}]{Debug.END} Select the save to be loaded (default=last): ");
     contents = GetContents(repo_obj, worldName);
+
+    if contents[0].path[contents[0].path.find("/") + 1 : ] in os.listdir(Local_Path):
+        opt = SelectOption(f" > {Debug.GREEN}Your save is up to date!{Debug.END} Nobody opened the server since your last save. Cancel operation? (Y or n)",
+                           ["y", "n"],
+                           "y"
+                           );
+        if opt == "y":
+            return;
+
     selectedContent = SelectContent(contents);
- 
     contents_to_import = [worldName + f"/{worldName}.db", worldName + f"/{worldName}.fwl", selectedContent];
     contents_to_import.append(selectedContent[ : selectedContent.find(".")] + ".fwl");
  
@@ -153,8 +158,7 @@ def LoadWorld(repo_obj, worldName):
         worldSave = repo_obj.get_contents(contents_to_import[i]);
 
         if worldSave.encoding == "none":
-            download_url = worldSave.download_url;
-            worldSave = requests.get(download_url).content;
+            worldSave = requests.get(worldSave.download_url).content;
         else:
             worldSave = worldSave.decoded_content;
  
@@ -162,15 +166,6 @@ def LoadWorld(repo_obj, worldName):
             print(imported_contents[i])
             world.write(worldSave);
     Log(Debug.SUCCESS, f"{worldName} save was loaded.")
- 
-    UpdateServerStatus(repo_obj, worldName, f"{Debug.SUCCESS}ACTIVE{Debug.END}", f"{Debug.UNDERLINE + SETTINGS['Client']['username'] + Debug.END}");
- 
-    cmd = SelectOption("\n > Launch Valheim? (Y or n) ",
-                       ["y", "n"],
-                       "y"
-                       );
-    if (cmd == "y"):
-        subprocess.Popen("C:/Program Files (x86)/Steam/Steam.exe -applaunch 892970");
  
 def SaveWorld(repo_obj, worldName):
     global Local_Path, IsServerActive;
@@ -184,7 +179,7 @@ def SaveWorld(repo_obj, worldName):
             sys.exit(0);
     try:
         current_time = datetime.datetime.now();
-        current_time_dmy = datetime.datetime.strftime(current_time, '%d-%m-%Y %H:%M:%S');
+        current_time_dmy = datetime.datetime.strftime(current_time, '%d/%m/%Y %H:%M:%S');
         commit_base_message = f"[{current_time_dmy} Saved by: {SETTINGS['Client']['username']}] ";
        
         files_to_update = [worldName + ".db"];
@@ -203,11 +198,13 @@ def SaveWorld(repo_obj, worldName):
         backup_files_time = [];
         for f in allLocalSaves:
             if worldName in f and "backup" in f and ".db" in f:
-                backup_files_time.append(GetDateFromFile(f.path));
+                time = GetDateFromFile(f);
+                backup_files_time.append(time);
+                backup_files_time.append(time[ : 8] + '-' + time[8 : ]); # backups and auto backups have different time format
         backup_files_time = sorted(backup_files_time, reverse=True);
 
-        last_backup_DT = datetime.datetime.strptime(backup_files_time[0], '%Y%m%d%H%M%S');
-        opt = SelectOption(f" > Last save was at [{last_backup_DT.strftime("%d-%m-%Y %H:%M:%S")}] Upload this save? (Y or n)",
+        last_backup_DT = datetime.datetime.strptime(backup_files_time[0].replace("-", ""), '%Y%m%d%H%M%S');
+        opt = SelectOption(f" > Last local save was at [{last_backup_DT.strftime("%d-%m-%Y %H:%M:%S")}] Upload this save? (Y or n)",
                      ["y", "n"],
                      "y"
                      );
@@ -217,34 +214,14 @@ def SaveWorld(repo_obj, worldName):
         print(f" > {worldName} save's description: ");
         commit_desc = input("   >> ");
         for f_to_export in allLocalSaves:
-            if backup_files_time[0] in f_to_export:
+            if backup_files_time[0] in f_to_export or backup_files_time[1] in f_to_export:
                 with open(Local_Path + f_to_export, "rb") as file_content:
                       repo_obj.create_file(
                         path= worldName + "/" + f_to_export,
                         message= commit_base_message + commit_desc,
                         content= file_content.read()
                     );
-
-        UpdateServerStatus(repo_obj, worldName, f"{Debug.RED}INACTIVE{Debug.END}", f"{Debug.UNDERLINE}Nobody{Debug.END}");
         Log(Debug.SUCCESS, f"{worldName} saved.");
-   
-        contents = GetContents(repo_obj, worldName);
-        contents_limit = int(SETTINGS['Server']['maxWorldSaves']);
-        if len(contents) > contents_limit:
-            Log(Debug.WARNING, f"The save limit set on settings.ini was reached. LIMIT = {contents_limit} / SAVES NUMBER = {len(contents)}.)");
-            cmd = SelectOption(" > Delete last saves out of limits? (Y or n)",
-                         ["y", "n"],
-                         "y"
-                         );
-            if cmd == "n":
-                return;
-        for i in range(contents_limit, len(contents)):
-            repo_obj.delete_file(
-                path= contents[i].path,
-                message= "Old save number out of limits",
-                sha= contents[i].sha
-            );
-            print(f"{Debug.UNDERLINE + contents[i].path} DELETED.{Debug.END}")
     except Exception as e:
         Log(Debug.ERROR, f"World may not exist in {Local_Path}. Check if the path and world exists. Or you don't have Github permissions to write: {e}");
  
@@ -286,6 +263,34 @@ def main():
     match operation:
         case "save":
             SaveWorld(repo, worldName);
+            UpdateServerStatus(repo, worldName, f"{Debug.RED}INACTIVE{Debug.END}", f"{Debug.UNDERLINE}Nobody{Debug.END}");
+        
+            contents = GetContents(repo, worldName);
+            contents_limit = int(SETTINGS['Server']['maxWorldSaves']);
+            if len(contents) > contents_limit:
+                Log(Debug.WARNING, f"The save limit set on settings.ini was reached. LIMIT = {contents_limit} / SAVES NUMBER = {len(contents)}.)");
+                cmd = SelectOption(" > Delete last saves out of limits? (Y or n)",
+                            ["y", "n"],
+                            "y"
+                            );
+                if cmd == "n":
+                    return;
+            for i in range(contents_limit, len(contents)):
+                repo.delete_file(
+                    path= contents[i].path,
+                    message= "Old save number out of limits",
+                    sha= contents[i].sha
+                );
+                print(f"{Debug.UNDERLINE + contents[i].path} DELETED.{Debug.END}");
+        
         case "load":
             LoadWorld(repo, worldName);
+            UpdateServerStatus(repo, worldName, f"{Debug.SUCCESS}ACTIVE{Debug.END}", f"{Debug.UNDERLINE + SETTINGS['Client']['username'] + Debug.END}");
+
+            cmd = SelectOption("\n > Launch Valheim? (Y or n) ",
+                       ["y", "n"],
+                       "y"
+                       );
+            if (cmd == "y"):
+                subprocess.Popen("C:/Program Files (x86)/Steam/Steam.exe -applaunch 892970");
 main();
