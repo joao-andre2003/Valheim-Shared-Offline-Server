@@ -182,8 +182,7 @@ def SaveWorld(repo_obj, worldName):
         current_time_dmy = datetime.datetime.strftime(current_time, '%d/%m/%Y %H:%M:%S');
         commit_base_message = f"[{current_time_dmy} Saved by: {SETTINGS['Client']['username']}] ";
        
-        files_to_update = [worldName + ".db"];
-        files_to_update.append(worldName + ".fwl");
+        files_to_update = [worldName + ".db", worldName + ".fwl"];
         for f_to_update in files_to_update:
             with open(Local_Path + f_to_update, "rb") as file_content:
                 content_to_update = repo_obj.get_contents(worldName + "/" + f_to_update);
@@ -276,12 +275,14 @@ def main():
                 if cmd == "n":
                     return;
             for i in range(contents_limit, len(contents)):
-                repo.delete_file(
-                    path= contents[i].path,
-                    message= "Old save number out of limits",
-                    sha= contents[i].sha
-                );
-                print(f"{Debug.UNDERLINE + contents[i].path} DELETED.{Debug.END}");
+                path_to_delete = [contents[i].path, contents[i].path.replace("db", "fwl")];
+                for file in path_to_delete:
+                    repo.delete_file(
+                        path= file,
+                        message= "Old save number out of limits",
+                        sha= contents[i].sha
+                    );
+                    print(f"{Debug.UNDERLINE + file} DELETED.{Debug.END}");
         
         case "load":
             LoadWorld(repo, worldName);
