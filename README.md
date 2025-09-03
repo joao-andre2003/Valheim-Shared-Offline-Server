@@ -39,4 +39,4 @@ Run the program after closing the game and run the **command SAVE to "close the 
 <p align="center"><img src="https://img2.storyblok.com/fit-in/1000x1000/f/157036/552x800/322109d551/build-2.png" alt="Valheim official media from https://www.valheimgame.com" width="276" height="400"/></p>
 
 ## May the wind blow in your crew's favor!
-Consider subscribing: https://www.youtube.com/@BitDruida
+Consider subscribing: https://www.youtube.com/@CodeDruida
