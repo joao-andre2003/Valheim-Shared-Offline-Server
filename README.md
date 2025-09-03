@@ -15,7 +15,7 @@ It is a Python .exe, the source-code is available for personal edit if you wish 
 ### STEP 1: 
 Download this .zip repository and extract in any directory. You can delete .py file if you wish, but .exe and header/settings.json are vital. 
 
-### STEP 2 (Only one player needs to do this step): 
+### STEP 2 *(Only one player needs to do this step)*: 
 Set up the Github repository that will save your world files. Someone of the players who will use the server need to have an account on Github and create an empty and PRIVATE repository. The repository name is arbitrary. After that, you will need a Github Token to access and edit this repository. This token can be a bit trick to find, so here is the path. Logged in on Github, go to the upper right corner in your Profile Pic -> Settings -> Developer settings -> Personal access tokens -> Fine-granted tokens -> Generate new token. Be sure to select **Only select repositores** and choose the repository you just created for security. After that, **Add permissions** to pull, create, update, delete files and folders. In doubt and if you trust who you will give access to this repository, select every permission and check "Read and Write". The token will only appear once, so copy and save it. That's all you need from Github, from now on, you can just run the code.
 
 ### STEP 3: 
