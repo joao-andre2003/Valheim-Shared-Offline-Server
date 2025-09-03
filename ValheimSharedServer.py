@@ -110,7 +110,7 @@ def UpdateServerStatus(repo_obj, worldName, status, username):
     Log(Debug.SUCCESS, "Server Status updated.");
    
 def CreateNewWorld(repo_obj):
-    print("\n > What is the new world server name?");
+    print(f"\n > What is the new world server name? (It need to be {Debug.UNDERLINE}the exactly same name{Debug.END} as your local saved world)");
     worldName = input("   >> ");
     newFiles = ["Server_Status.txt", worldName + ".db", worldName + ".fwl"];
     for file in newFiles:
