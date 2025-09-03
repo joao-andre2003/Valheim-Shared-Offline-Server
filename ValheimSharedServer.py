@@ -32,7 +32,7 @@ Local_Path = "";
 def Log(logType, message):
     print(logType + message);
     if logType == Debug.ERROR:
-        input("Press any key to exit...");
+        input("Press ENTER to exit...");
         sys.exit(0);
 
 def GetDateFromFile(fileName):
