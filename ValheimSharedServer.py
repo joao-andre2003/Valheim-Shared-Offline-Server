@@ -36,7 +36,7 @@ def Log(logType, message):
         sys.exit(0);
 
 def GetDateFromFile(fileName):
-    return fileName.replace("auto-", "")[fileName.find("backup_") + 7 : ].replace("-", "").replace(".db", ""); # backups have another '-' to separate hour from day
+    return fileName.replace("auto-", "").replace("restore-", "")[fileName.find("backup_") + 7 : ].replace("-", "").replace(".db", ""); # backups have another '-' to separate hour from day
  
 def GetContents(repo_obj, path=""):
     try:
