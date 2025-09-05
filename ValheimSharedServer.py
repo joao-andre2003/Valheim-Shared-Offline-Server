@@ -36,7 +36,7 @@ def Log(logType, message):
         sys.exit(0);
 
 def GetDateFromFile(fileName):
-    return fileName.replace("auto-", "").replace("restore-", "")[fileName.find("backup_") + 7 : ].replace("-", "").replace(".db", ""); # backups have another '-' to separate hour from day
+    return fileName.replace("auto-", "")[fileName.find("backup_") + 7 : ].replace("-", "").replace(".db", ""); # backups have another '-' to separate hour from day
  
 def GetContents(repo_obj, path=""):
     try:
@@ -146,7 +146,8 @@ def LoadWorld(repo_obj, worldName):
             return;
 
     selectedContent = SelectContent(contents);
-    contents_to_import = [worldName + f"/{worldName}.db", worldName + f"/{worldName}.fwl", selectedContent, selectedContent.replace("db", "fwl")];
+    contents_to_import = [worldName + f"/{worldName}.db", worldName + f"/{worldName}.fwl", selectedContent];
+    contents_to_import.append(selectedContent[ : selectedContent.find(".")] + ".fwl");
  
     imported_contents = [];
     for content in contents_to_import:
@@ -274,8 +275,8 @@ def main():
                 if cmd == "n":
                     return;
             for i in range(contents_limit, len(contents)):
-                path_to_delete = [contents[i].path, contents[i].path.replace("db", "fwl")];
-                for file in path_to_delete:
+                files = [contents[i].path, contents[i].path.replace("db", "fwl")];
+                for file in files:
                     repo.delete_file(
                         path= file,
                         message= "Old save number out of limits",
